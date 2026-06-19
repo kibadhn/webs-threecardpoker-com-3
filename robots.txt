@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kibadhn.github.io/webs-threecardpoker-com-3/sitemap.xml

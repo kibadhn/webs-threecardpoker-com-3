@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>炸金花游戏 · 牌局与判断</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f4f5f7;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', sans-serif;
+      color: #2e3a46;
+      line-height: 1.7;
+      padding: 2rem 1.2rem;
+    }
+
+    .page {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    /* 卡片通用设计 */
+    .card {
+      background: #ffffff;
+      border: 1px solid #e8eaeD;
+      border-radius: 22px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+      padding: 2rem 1.8rem;
+      margin-bottom: 2rem;
+      transition: box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    /* hero 区域 不使用加粗大标题，而是用更叙述性的引言 */
+    .hero {
+      text-align: left;
+      padding-top: 1.8rem;
+      padding-bottom: 1.8rem;
+    }
+
+    .hero .eyebrow {
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #7e8a95;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: #3a4958;
+      max-width: 85%;
+    }
+
+    /* 标题风格 */
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: #1d2a37;
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.01em;
+      border-bottom: 1px solid #eef0f2;
+      padding-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #2c3e4e;
+      margin: 1.5rem 0 0.6rem;
+    }
+
+    /* 段落细节 */
+    p {
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0.5rem 0 1.2rem;
+    }
+
+    li {
+      padding-left: 1.4rem;
+      position: relative;
+      margin-bottom: 0.6rem;
+    }
+
+    li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: #8b9baa;
+    }
+
+    a {
+      color: #1a6c8c;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s;
+    }
+
+    a:hover {
+      border-bottom-color: #1a6c8c;
+    }
+
+    /* 亮点网格 */
+    .highlight-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .highlight-item {
+      background: #fafbfc;
+      border-radius: 16px;
+      padding: 1.2rem 1rem 0.8rem;
+      border: 1px solid #edeff2;
+    }
+
+    .highlight-item strong {
+      display: block;
+      font-weight: 500;
+      color: #1d2a37;
+      margin-bottom: 0.3rem;
+    }
+
+    .highlight-item span {
+      font-size: 0.9rem;
+      color: #536572;
+    }
+
+    /* 使用场景卡片 更宽松 */
+    .scenario-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin: 1.2rem 0 0.6rem;
+    }
+
+    .scenario {
+      flex: 1 1 180px;
+      background: #fafbfc;
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      border: 1px solid #e7eaee;
+    }
+
+    .scenario .emoji-marker {
+      font-size: 1.2rem;
+      margin-right: 6px;
+    }
+
+    /* 提示 / FAQ 区域 缩紧一点 */
+    .faq-item {
+      margin-bottom: 1.2rem;
+    }
+
+    .faq-item .q {
+      font-weight: 500;
+      color: #1d2a37;
+      margin-bottom: 0.2rem;
+    }
+
+    .faq-item .a {
+      color: #4f5f6e;
+      font-size: 0.95rem;
+    }
+
+    .visit-note {
+      background: #f2f5f9;
+      border-radius: 18px;
+      padding: 1.2rem 1.6rem;
+      margin-top: 1.5rem;
+      border-left: 4px solid #b7c6d4;
+      font-size: 0.95rem;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e6e9ed;
+      margin: 1.5rem 0;
+    }
+
+    /* 响应式 */
+    @media (max-width: 640px) {
+      body {
+        padding: 1.5rem 0.9rem;
+      }
+      .card {
+        padding: 1.5rem 1.2rem;
+      }
+      .hero p {
+        max-width: 100%;
+        font-size: 1.05rem;
+      }
+      .highlight-grid {
+        grid-template-columns: 1fr;
+      }
+      .scenario-box {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- hero 卡片 叙述式开头 -->
+  <div class="card hero">
+    <div class="eyebrow">· 牌桌逻辑 ·</div>
+    <p>
+      一副牌三个人，故事往往从底注开始。有人看牌，有人闷牌，有人弃牌——
+      每一步都在信息与判断之间摇摆。<a href="https://webs-threecardpoker.com">炸金花游戏</a> 
+      的魅力就藏在这些微小的选择里：比牌还是放弃，加注还是稳一手。
+    </p>
+    <p style="margin-bottom: 0; color: #536572; font-size: 0.95rem;">
+      没有绝对的公式，但有可观察的规律。
+    </p>
+  </div>
+
+  <!-- 产品摘要 + 亮点 合并在一张卡片内 -->
+  <div class="card">
+    <h2>牌型与节奏</h2>
+    <p>
+      炸金花使用三张牌比大小，豹子、同花顺、同花、顺子、对子、单张，层级简单但变数不少。
+      牌局通常围绕“闷”与“看”两种状态交替推进，心理层面往往比手牌更重要。
+    </p>
+
+    <div class="highlight-grid">
+      <div class="highlight-item">
+        <strong>均衡规则</strong>
+        <span>底池、加注、比牌，每一步都有明确操作，没有复杂花哨的附加条款。</span>
+      </div>
+      <div class="highlight-item">
+        <strong>节奏自主</strong>
+        <span>既可以快速比牌结束一局，也可以长时间试探周旋，取决于玩家的风格。</span>
+      </div>
+      <div class="highlight-item">
+        <strong>离线友好</strong>
+        <span>无须实时连线，回合制操作，随时暂停，适合碎片时间。</span>
+      </div>
+      <div class="highlight-item">
+        <strong>视觉克制</strong>
+        <span>界面干净，牌面、筹码、操作区一目了然，不被特效干扰判断。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 使用建议 / 场景 卡片 -->
+  <div class="card">
+    <h2>什么时候适合来一局</h2>
+    <p>
+      炸金游戏对人数和场地要求很低，大致场景可以这样划分：
+    </p>
+    <div class="scenario-box">
+      <div class="scenario">
+        <span class="emoji-marker">🧘</span> 独自练习
+        <div style="font-size: 0.85rem; color: #5f6f7e; margin-top: 0.2rem;">熟悉比牌逻辑，培养对底牌赔率的直觉。</div>
+      </div>
+      <div class="scenario">
+        <span class="emoji-marker">🤝</span> 三五好友
+        <div style="font-size: 0.85rem; color: #5f6f7e; margin-top: 0.2rem;">节奏相当，闲聊之间一局刚好，不拖沓。</div>
+      </div>
+      <div class="scenario">
+        <span class="emoji-marker">⏳</span> 通勤等待
+        <div style="font-size: 0.85rem; color: #5f6f7e; margin-top: 0.2rem;">一局两分钟，可以随时放下，没有持续对局压力。</div>
+      </div>
+    </div>
+    <p style="margin-top: 1rem; font-size: 0.95rem;">
+      开始之前建议先设置一个底注上限，帮助控制单局节奏。
+    </p>
+  </div>
+
+  <!-- FAQ 摘要 + 访问说明 合并 -->
+  <div class="card">
+    <h2>几个常见问题</h2>
+
+    <div class="faq-item">
+      <div class="q">—— 炸金花和德州扑克区别大吗？</div>
+      <div class="a">炸金花只用三张牌，没有公共牌，也没有翻牌转牌河牌阶段。比牌直接，心理博弈更集中。</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">—— 可以中途加入牌局吗？</div>
+      <div class="a">一般需要等待当前牌局结束再加入下一局，系统会提示轮次状态。</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">—— 输赢完全靠运气？</div>
+      <div class="a">发牌随机，但下注、比牌时机、闷牌决策都会影响最终结果，长期来看判断力有作用空间。</div>
+    </div>
+
+    <div class="visit-note">
+      <strong style="font-weight: 500;">关于这个网站</strong><br>
+      如果你对<a href="https://webs-threecardpoker.com">炸金花游戏</a>的规则或对局方式感兴趣，
+      可以浏览其中的基本说明与牌局示例。页面没有强制注册，也没有诱导下载，
+      主要提供相对清晰的玩法介绍和常见情形解释。
+    </div>
+
+    <hr>
+    <p style="font-size: 0.85rem; color: #6f7f8e; margin-bottom: 0;">
+      本文档仅作说明用途，不构成任何形式的策略承诺或建议。牌局有风险，决策需自行斟酌。
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
